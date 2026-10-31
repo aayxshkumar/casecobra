@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      # Placeholder values so the build can run; no real services are contacted.
+      DATABASE_URL: postgresql://user:pass@localhost:5432/db
+      KINDE_CLIENT_ID: placeholder-client-id
+      KINDE_CLIENT_SECRET: placeholder-client-secret
+      KINDE_ISSUER_URL: http://localhost:8080
+      KINDE_SITE_URL: http://localhost:3000
+      KINDE_POST_LOGOUT_REDIRECT_URL: http://localhost:3000
+      KINDE_POST_LOGIN_REDIRECT_URL: http://localhost:3000/auth-callback
+      RESEND_API_KEY: re_placeholder
+      STRIPE_SECRET_KEY: sk_test_placeholder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint
+      - run: npm run build
